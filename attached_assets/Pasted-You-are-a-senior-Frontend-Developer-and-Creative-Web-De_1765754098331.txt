@@ -1,0 +1,75 @@
+You are a senior Frontend Developer and Creative Web Designer.
+
+Build a MODERN, HIGH-END Samurai Restaurant Website Frontend using:
+- HTML5
+- CSS3 (VERY ICONIC & CINEMATIC)
+- JavaScript (Vanilla)
+- Three.js for 3D Samurai models
+
+STYLE & THEME:
+- Japanese Samurai aesthetic
+- Dark theme with black, deep red (#8b0000), gold accents (#d4af37)
+- Inspired by feudal Japan, katana steel, smoke, fire, honor
+- Luxury restaurant vibe
+
+3D MODELS:
+- Add 1–2 Samurai 3D models using Three.js
+- Samurai idle breathing animation
+- Katana unsheathing animation on hover
+- Samurai turns head slightly following mouse movement
+- Soft red rim light + warm gold spotlight
+- Floating sakura petals (particle system)
+
+ANIMATIONS (ICONIC):
+- Samurai model slowly floats with subtle motion
+- Sword glow animation on hover
+- Smoke/fog shader effect near the ground
+- Page sections reveal with cinematic scroll animations
+- Menu items appear with slash-style animations
+- Logo appears with katana slash effect
+
+LAYOUT SECTIONS:
+1. Hero Section:
+   - Fullscreen
+   - 3D Samurai centered
+   - Japanese calligraphy logo
+   - Text: "Honor. Fire. Flavor."
+   - CTA button with glowing katana effect
+
+2. Menu Section:
+   - Samurai-themed food cards
+   - Hover: slash animation + red glow
+   - Parallax background
+
+3. About Section:
+   - Samurai code (Bushido) storytelling
+   - Subtle smoke animation
+
+4. Contact / Reservation:
+   - Glassmorphism form
+   - Red neon borders
+
+CSS REQUIREMENTS:
+- Use advanced CSS:
+  - CSS variables
+  - Keyframes
+  - Neon glow effects
+  - Backdrop-filter
+  - Mask-image
+- Ultra-smooth transitions
+- Custom scrollbar Samurai style
+- Cursor changes to katana on hover
+
+PERFORMANCE:
+- Optimized Three.js scene
+- Responsive (mobile / desktop)
+- Works perfectly on Replit
+
+OUTPUT:
+- index.html
+- style.css (VERY ICONIC & ANIMATED)
+- script.js
+- Three.js setup included
+- No backend, frontend only
+
+Make the website feel like a cinematic samurai movie intro.
