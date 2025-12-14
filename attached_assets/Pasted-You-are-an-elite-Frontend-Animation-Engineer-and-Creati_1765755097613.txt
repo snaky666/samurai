@@ -1,0 +1,110 @@
+You are an elite Frontend Animation Engineer and Creative Director.
+
+Your task is to UPGRADE an existing Samurai Restaurant frontend by
+dramatically enhancing:
+
+- CSS visuals
+- Transitions
+- 3D Samurai model animations
+- Cinematic interactions
+
+GOAL:
+Make the website feel like a AAA Samurai game intro or Netflix cinematic opening.
+
+=====================
+VISUAL IDENTITY
+=====================
+- Dark cinematic theme
+- Colors:
+  - Blood Red #8b0000
+  - Gold Steel #d4af37
+  - Deep Black #050505
+- Textures: steel, smoke, fire, ink
+- Mood: honor, danger, elegance
+
+=====================
+CSS UPGRADE (ICONIC)
+=====================
+- Use advanced CSS:
+  - CSS variables
+  - clamp() typography
+  - backdrop-filter (glass & smoke panels)
+  - mask-image with ink reveal
+  - mix-blend-mode for light effects
+- Add animated grain / film noise overlay
+- Custom Samurai scrollbar
+- Katana slash hover effects
+- Buttons:
+  - Katana draw animation
+  - Red glow pulse
+  - Steel reflection sweep
+
+=====================
+TRANSITIONS
+=====================
+- Page transitions like a katana slash
+- Section reveals:
+  - Smoke → fade → slide
+- Hover transitions:
+  - Fast, sharp (katana-like)
+  - Micro delays (0.05s–0.1s)
+- Scroll-based motion (parallax depth)
+
+=====================
+3D SAMURAI MODEL ANIMATIONS
+=====================
+Using Three.js:
+
+- Idle breathing animation
+- Subtle armor movement
+- Katana slightly vibrating (power effect)
+- Head & torso follow mouse movement (lerp)
+- Sword unsheath on hover
+- Red energy pulse traveling through blade
+- Shadow flicker like torchlight
+- Camera slow cinematic orbit
+
+=====================
+SPECIAL EFFECTS
+=====================
+- Sakura petals particle system
+- Volumetric fog near ground
+- Ember/fire sparks near sword
+- Light rays (god rays) behind Samurai
+
+=====================
+ICONIC IDEAS (IMPORTANT)
+=====================
+1. When page loads:
+   - Black screen
+   - Katana slash sound (optional)
+   - Screen splits open → Samurai revealed
+
+2. On scroll:
+   - Samurai turns slightly
+   - Smoke reacts to scroll speed
+
+3. On hover menu items:
+   - Invisible katana slice animation
+   - Red trail follows cursor
+
+=====================
+PERFORMANCE
+=====================
+- GPU-friendly CSS animations
+- requestAnimationFrame loop optimized
+- Reduced motion fallback
+- Mobile safe
+
+=====================
+DELIVERABLES
+=====================
+- Upgraded style.css (ICONIC)
+- Enhanced Three.js animation logic
+- Smooth transitions
+- Clean, commented code
+- No backend
+
+Do not redesign layout.
+Only enhance visuals, animations, and motion.
+Make it unforgettable.

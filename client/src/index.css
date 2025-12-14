@@ -22,37 +22,40 @@
   --font-cinzel: 'Cinzel', serif;
   --font-serif-jp: 'Noto Serif JP', serif;
   --font-sans: 'DM Sans', sans-serif;
+  
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-circ: cubic-bezier(0.85, 0, 0.15, 1);
 }
 
 :root {
   /* Dark Theme by Default for this vibe */
-  --background: 0 0% 5%; /* #0d0d0d */
+  --background: 0 0% 2%; /* #050505 - Deep Black */
   --foreground: 40 20% 94%; /* #f5f2eb */
   
   --primary: 0 90% 30%; /* #910505 - Deep Blood Red */
   --primary-foreground: 0 0% 98%;
   
-  --secondary: 0 0% 12%; /* #1f1f1f */
-  --secondary-foreground: 0 0% 90%;
+  --secondary: 0 0% 8%; /* #141414 */
+  --secondary-foreground: 0 0% 80%;
   
   --accent: 46 65% 52%; /* #d4af37 - Gold */
-  --accent-foreground: 0 0% 10%;
+  --accent-foreground: 0 0% 5%;
   
-  --muted: 0 0% 15%;
-  --muted-foreground: 0 0% 60%;
+  --muted: 0 0% 12%;
+  --muted-foreground: 0 0% 50%;
   
-  --card: 0 0% 8%;
+  --card: 0 0% 5%;
   --card-foreground: 0 0% 95%;
   
-  --border: 0 0% 20%;
-  --input: 0 0% 20%;
+  --border: 0 0% 15%;
+  --input: 0 0% 15%;
   
   --radius: 0rem; /* Sharp edges for samurai vibe */
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border cursor-none; /* Hide default cursor everywhere */
   }
   body {
     @apply font-sans antialiased bg-background text-foreground overflow-x-hidden selection:bg-primary selection:text-white;
@@ -67,7 +70,7 @@
     text-shadow: 0 0 20px rgba(212, 175, 55, 0.3), 0 0 40px rgba(212, 175, 55, 0.1);
   }
   .text-glow-red {
-    text-shadow: 0 0 20px rgba(139, 0, 0, 0.5), 0 0 40px rgba(139, 0, 0, 0.2);
+    text-shadow: 0 0 20px rgba(139, 0, 0, 0.6), 0 0 40px rgba(139, 0, 0, 0.3);
   }
   
   .clip-diagonal {
@@ -75,34 +78,130 @@
   }
   
   .clip-katana {
-    clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%);
+    clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+  }
+  
+  .clip-slash-start {
+    clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+  }
+  
+  .clip-slash-end {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
   }
 
   .mask-gradient-b {
     mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
   }
   
-  .katana-cursor {
-    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/></svg>') 0 0, auto;
+  .mask-ink-reveal {
+      mask-image: url('/assets/ink-mask.png'); /* Placeholder, we will use css gradients for now */
+      mask-size: cover;
+      mask-position: center;
+  }
+  
+  .glass-panel {
+      background: rgba(10, 10, 10, 0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+  
+  .noise-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.05;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   }
 }
 
-/* Cinematic Animations */
+/* --- Cinematic Animations --- */
+
+/* Breathing Effect */
 @keyframes breathe {
-  0%, 100% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.02); opacity: 1; }
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.02); filter: brightness(1.1); }
 }
 
-@keyframes slash {
-  0% { clip-path: polygon(0 0, 0 0, 0 100%, 0 100%); opacity: 0; }
-  50% { opacity: 1; }
-  100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); opacity: 1; }
+/* Katana Slash Reveal */
+@keyframes slash-reveal {
+  0% { clip-path: polygon(0 0, 0 0, 0 100%, 0 100%); transform: translateX(-20px); opacity: 0; }
+  100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); transform: translateX(0); opacity: 1; }
+}
+
+/* Text Flicker (Torchlight effect) */
+@keyframes flicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.95; }
+    52% { opacity: 0.8; }
+    54% { opacity: 0.95; }
+    56% { opacity: 1; }
+    90% { opacity: 1; }
+    92% { opacity: 0.9; }
+}
+
+/* Red Pulse */
+@keyframes red-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(139, 0, 0, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(139, 0, 0, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(139, 0, 0, 0); }
+}
+
+/* Glitch Shake */
+@keyframes glitch-shake {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
 }
 
 .animate-breathe {
-  animation: breathe 6s ease-in-out infinite;
+  animation: breathe 8s ease-in-out infinite;
 }
 
 .animate-slash {
-  animation: slash 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slash-reveal 0.6s var(--ease-out-expo) forwards;
+}
+
+.animate-flicker {
+    animation: flicker 4s infinite;
+}
+
+.hover-glitch:hover {
+    animation: glitch-shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+/* Button Styles */
+.btn-katana {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.btn-katana::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: 0.5s;
+    transform: skewX(-20deg);
+}
+
+.btn-katana:hover::before {
+    left: 100%;
+}
+
+.btn-katana:hover {
+    box-shadow: 0 0 20px rgba(139, 0, 0, 0.6);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    border-color: rgba(139, 0, 0, 1);
 }
