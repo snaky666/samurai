@@ -13,7 +13,7 @@ const MenuItem = ({ title, price, desc, img, delay }: { title: string, price: st
     whileInView={{ opacity: 1, x: 0 }}
     viewport={{ once: true }}
     transition={{ duration: 0.8, delay, ease: "easeOut" }}
-    className="group relative overflow-hidden bg-card/50 backdrop-blur-sm border border-white/5 hover:border-primary/50 transition-colors duration-500"
+    className="group relative overflow-hidden bg-card/50 backdrop-blur-sm border border-white/5 hover:border-primary/50 transition-colors duration-500 tilt-3d"
   >
     <div className="flex flex-col md:flex-row h-full">
       <div className="w-full md:w-1/3 h-48 md:h-auto relative overflow-hidden">
@@ -50,7 +50,7 @@ const SectionHeading = ({ children, subtitle }: { children: React.ReactNode, sub
       initial={{ opacity: 0, scale: 0.9 }}
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
-      className="text-4xl md:text-6xl font-cinzel text-foreground relative inline-block"
+      className="text-4xl md:text-6xl font-cinzel text-foreground relative inline-block steel-shine"
     >
       {children}
       <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-24 h-1 bg-primary" />
@@ -86,7 +86,7 @@ export default function Interface() {
             transition={{ duration: 1, delay: 0.5 }}
             className="mb-6"
           >
-            <h1 className="text-6xl md:text-9xl font-cinzel font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-neutral-400 drop-shadow-lg">
+            <h1 className="text-6xl md:text-9xl font-cinzel font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-neutral-400 drop-shadow-lg glow-gold">
               RONIN
             </h1>
           </motion.div>
@@ -104,7 +104,7 @@ export default function Interface() {
             <motion.button 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-3 border border-primary/50 bg-black/50 backdrop-blur-md text-white font-cinzel tracking-widest hover:bg-primary hover:border-primary transition-all duration-300 group"
+              className="px-8 py-3 border border-primary/50 bg-black/50 backdrop-blur-md text-white font-cinzel tracking-widest hover:bg-primary hover:border-primary transition-all duration-300 group steel-shine glow-ember"
             >
               ENTER THE DOJO
             </motion.button>
@@ -262,7 +262,7 @@ export default function Interface() {
                    <input type="email" placeholder="Enter your email" className="w-full bg-white/5 border border-white/10 p-3 text-white focus:border-primary focus:outline-none transition-colors" />
                  </div>
                  
-                 <button type="button" className="w-full bg-primary text-white py-4 font-cinzel tracking-widest hover:bg-red-700 transition-colors flex items-center justify-center gap-2 group">
+                 <button type="button" className="w-full bg-primary text-white py-4 font-cinzel tracking-widest hover:bg-red-700 transition-colors flex items-center justify-center gap-2 group steel-shine">
                    CONFIRM RESERVATION
                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                  </button>

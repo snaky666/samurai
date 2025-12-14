@@ -292,8 +292,11 @@ export default function ThreeScene() {
     <div className="absolute inset-0 h-screen w-full bg-black">
       <IntroOverlay onComplete={() => setIntroFinished(true)} />
       
-      {/* Noise Overlay handled in CSS, but let's ensure it's there */}
-      <div className="noise-overlay" />
+      {/* Cinematic Enhancement Layers */}
+      <div className="film-grain" />
+      <div className="vignette" />
+      <div className="fog-layer" />
+      <div className="ink-overlay" />
 
       {/* Custom Cursor */}
       <CustomCursor />
