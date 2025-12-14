@@ -1,33 +1,35 @@
 import React, { useRef, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Image, ScrollControls, Scroll, useScroll, Float, Environment, Text, Line, Trail } from '@react-three/drei';
+import { Image, ScrollControls, Scroll, useScroll, Float, Environment, Text, Line, Trail, ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
-import samuraiImg from '@assets/generated_images/samurai_warrior_portrait.png';
 import bgTexture from '@assets/generated_images/dark_textured_background.png';
 import Interface from '@/components/Interface';
 
 // --- 3D Components ---
 
-function Katana({ position, rotation }: { position: [number, number, number], rotation: [number, number, number] }) {
+function Katana({ position, rotation }: { position?: [number, number, number], rotation?: [number, number, number] }) {
   const group = useRef<THREE.Group>(null);
   
-  useFrame((state) => {
-      if(group.current) {
-          // Subtle floating
-          group.current.position.y = position[1] + Math.sin(state.clock.getElapsedTime()) * 0.1;
-      }
-  })
-
+  // Removed internal floating animation so it can be controlled by parent (Samurai hand)
+  
   return (
     <group ref={group} position={position} rotation={rotation}>
-      {/* Blade */}
-      <mesh position={[0, 1.5, 0]}>
-        <boxGeometry args={[0.1, 3, 0.02]} />
-        <meshStandardMaterial color="#e0e0e0" metalness={0.9} roughness={0.1} />
-      </mesh>
+      {/* Blade - Curvature approximation */}
+      <group position={[0, 1.5, 0]}>
+         <mesh position={[0, 0, 0]}>
+            <boxGeometry args={[0.08, 3, 0.02]} />
+            <meshStandardMaterial color="#e0e0e0" metalness={0.9} roughness={0.1} />
+         </mesh>
+         {/* Tip */}
+         <mesh position={[0, 1.6, 0]} rotation={[0, 0, Math.PI/4]}>
+            <boxGeometry args={[0.06, 0.2, 0.02]} />
+            <meshStandardMaterial color="#e0e0e0" metalness={0.9} roughness={0.1} />
+         </mesh>
+      </group>
+
       {/* Edge glow */}
-      <mesh position={[0.05, 1.5, 0]}>
-          <boxGeometry args={[0.01, 3, 0.025]} />
+      <mesh position={[0.04, 1.5, 0]}>
+          <boxGeometry args={[0.005, 3, 0.025]} />
           <meshBasicMaterial color="#a0a0a0" />
       </mesh>
       
@@ -36,7 +38,6 @@ function Katana({ position, rotation }: { position: [number, number, number], ro
         <cylinderGeometry args={[0.2, 0.2, 0.05, 16]} />
         <meshStandardMaterial color="#1a1a1a" metalness={0.8} roughness={0.5} />
       </mesh>
-      {/* Gold accent on guard */}
       <mesh position={[0, 0, 0]} rotation={[Math.PI/2, 0, 0]}>
          <torusGeometry args={[0.15, 0.02, 16, 32]} />
          <meshStandardMaterial color="#d4af37" metalness={1} roughness={0.2} emissive="#d4af37" emissiveIntensity={0.2} />
@@ -44,16 +45,171 @@ function Katana({ position, rotation }: { position: [number, number, number], ro
 
       {/* Handle (Tsuka) */}
       <mesh position={[0, -0.75, 0]}>
-        <cylinderGeometry args={[0.08, 0.08, 1.5, 8]} />
+        <cylinderGeometry args={[0.06, 0.07, 1.5, 8]} />
         <meshStandardMaterial color="#111" metalness={0.2} roughness={0.9} />
       </mesh>
-      {/* Handle Pattern (Diamond shape approximation via texture or primitive? Primitive for now) */}
+      {/* Handle Wrapping Pattern */}
       <mesh position={[0, -0.75, 0]}>
-         <cylinderGeometry args={[0.085, 0.085, 1.4, 8]} />
+         <cylinderGeometry args={[0.065, 0.075, 1.4, 8]} />
          <meshStandardMaterial color="#333" wireframe />
       </mesh>
     </group>
   );
+}
+
+function ArmorPlate({ position, args, color = "#111" }: { position: [number, number, number], args: [number, number, number], color?: string }) {
+    return (
+        <mesh position={position}>
+            <boxGeometry args={args} />
+            <meshStandardMaterial color={color} metalness={0.6} roughness={0.4} />
+            {/* Gold Trim */}
+            <mesh position={[0, -args[1]/2 + 0.02, args[2]/2 + 0.001]}>
+                <boxGeometry args={[args[0], 0.04, 0.01]} />
+                <meshStandardMaterial color="#d4af37" metalness={1} roughness={0.2} />
+            </mesh>
+        </mesh>
+    )
+}
+
+function GeometricSamurai() {
+    const group = useRef<THREE.Group>(null);
+    const headRef = useRef<THREE.Group>(null);
+    const rightArmRef = useRef<THREE.Group>(null);
+    
+    useFrame((state) => {
+        if(!group.current || !headRef.current || !rightArmRef.current) return;
+        
+        const t = state.clock.getElapsedTime();
+        
+        // Idle breathing
+        const breathe = Math.sin(t * 1) * 0.05;
+        group.current.position.y = breathe;
+        
+        // Head follow mouse
+        const mouseX = state.mouse.x * 0.5;
+        const mouseY = state.mouse.y * 0.2;
+        headRef.current.rotation.y = THREE.MathUtils.lerp(headRef.current.rotation.y, mouseX, 0.1);
+        headRef.current.rotation.x = THREE.MathUtils.lerp(headRef.current.rotation.x, -mouseY, 0.1);
+
+        // Arm Sway with Sword
+        rightArmRef.current.rotation.z = -0.5 + Math.sin(t * 1.5) * 0.05;
+        rightArmRef.current.rotation.x = 0.5 + Math.cos(t * 1.5) * 0.05;
+    })
+
+    return (
+        <group ref={group}>
+            {/* --- HEAD (Kabuto) --- */}
+            <group ref={headRef} position={[0, 1.7, 0]}>
+                {/* Helmet Dome */}
+                <mesh position={[0, 0.1, 0]}>
+                    <sphereGeometry args={[0.35, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2]} />
+                    <meshStandardMaterial color="#0a0a0a" metalness={0.8} roughness={0.3} />
+                </mesh>
+                {/* Facemask (Mempo) */}
+                <mesh position={[0, -0.15, 0.2]} rotation={[0.2, 0, 0]}>
+                    <cylinderGeometry args={[0.25, 0.15, 0.4, 6]} />
+                    <meshStandardMaterial color="#1a1a1a" metalness={0.7} roughness={0.5} />
+                </mesh>
+                {/* Gold Crest (Maedate) */}
+                <mesh position={[0, 0.3, 0.3]} rotation={[0, 0, 0]}>
+                    <cylinderGeometry args={[0.02, 0.1, 0.4, 4]} />
+                    <meshStandardMaterial color="#d4af37" metalness={1} roughness={0.2} />
+                </mesh>
+                <mesh position={[0, 0.45, 0.3]} rotation={[0, 0, Math.PI/4]}>
+                     <boxGeometry args={[0.4, 0.05, 0.02]} />
+                     <meshStandardMaterial color="#d4af37" metalness={1} roughness={0.2} />
+                </mesh>
+                <mesh position={[0, 0.45, 0.3]} rotation={[0, 0, -Math.PI/4]}>
+                     <boxGeometry args={[0.4, 0.05, 0.02]} />
+                     <meshStandardMaterial color="#d4af37" metalness={1} roughness={0.2} />
+                </mesh>
+                {/* Neck Guard (Shikoro) */}
+                <group position={[0, -0.1, -0.1]}>
+                     <ArmorPlate position={[0, 0, 0]} args={[0.6, 0.1, 0.4]} />
+                     <ArmorPlate position={[0, -0.12, 0.02]} args={[0.65, 0.1, 0.45]} />
+                     <ArmorPlate position={[0, -0.24, 0.04]} args={[0.7, 0.1, 0.5]} />
+                </group>
+            </group>
+
+            {/* --- TORSO (Do) --- */}
+            <group position={[0, 0.8, 0]}>
+                {/* Chest Plate */}
+                <mesh position={[0, 0.2, 0]}>
+                    <cylinderGeometry args={[0.45, 0.4, 0.8, 8]} />
+                    <meshStandardMaterial color="#111" metalness={0.5} roughness={0.5} />
+                </mesh>
+                {/* Gold chest emblem */}
+                <mesh position={[0, 0.3, 0.41]}>
+                    <circleGeometry args={[0.08, 32]} />
+                    <meshStandardMaterial color="#d4af37" metalness={1} roughness={0.2} />
+                </mesh>
+                
+                {/* Shoulder Guards (Sode) */}
+                <group position={[-0.6, 0.4, 0]} rotation={[0, 0, 0.5]}>
+                     <ArmorPlate position={[0, 0, 0]} args={[0.4, 0.6, 0.1]} />
+                </group>
+                <group position={[0.6, 0.4, 0]} rotation={[0, 0, -0.5]}>
+                     <ArmorPlate position={[0, 0, 0]} args={[0.4, 0.6, 0.1]} />
+                </group>
+
+                {/* Waist Armor (Kusazuri) */}
+                <group position={[0, -0.4, 0]}>
+                    <ArmorPlate position={[0, 0, 0.3]} args={[0.3, 0.5, 0.1]} />
+                    <ArmorPlate position={[0.35, 0, 0.2]} args={[0.3, 0.5, 0.1]} />
+                    <ArmorPlate position={[-0.35, 0, 0.2]} args={[0.3, 0.5, 0.1]} />
+                    <ArmorPlate position={[0, 0, -0.3]} args={[0.3, 0.5, 0.1]} />
+                </group>
+            </group>
+
+            {/* --- ARMS --- */}
+            {/* Left Arm (Static/Resting) */}
+            <group position={[-0.6, 1.2, 0]} rotation={[0, 0, 0.2]}>
+                 <mesh position={[0, -0.4, 0]}>
+                     <cylinderGeometry args={[0.12, 0.1, 0.8, 8]} />
+                     <meshStandardMaterial color="#1a1a1a" />
+                 </mesh>
+            </group>
+
+            {/* Right Arm (Holding Sword) */}
+            <group ref={rightArmRef} position={[0.6, 1.2, 0]}>
+                 {/* Upper Arm */}
+                 <mesh position={[0, -0.3, 0]}>
+                     <cylinderGeometry args={[0.12, 0.1, 0.6, 8]} />
+                     <meshStandardMaterial color="#1a1a1a" />
+                 </mesh>
+                 {/* Forearm */}
+                 <group position={[0, -0.6, 0]} rotation={[0.5, 0, 0]}>
+                      <mesh position={[0, -0.3, 0]}>
+                          <cylinderGeometry args={[0.1, 0.08, 0.6, 8]} />
+                          <meshStandardMaterial color="#1a1a1a" />
+                      </mesh>
+                      {/* Hand */}
+                      <mesh position={[0, -0.65, 0]}>
+                          <sphereGeometry args={[0.12]} />
+                          <meshStandardMaterial color="#111" />
+                      </mesh>
+                      {/* SWORD ATTACHMENT */}
+                      <Katana position={[0, -0.65, 0]} rotation={[Math.PI/2, 0, Math.PI/2]} />
+                 </group>
+            </group>
+
+            {/* --- LEGS --- */}
+            <group position={[0, -0.5, 0]}>
+                 {/* Left Leg */}
+                 <mesh position={[-0.3, -0.8, 0]}>
+                     <cylinderGeometry args={[0.18, 0.12, 1.6, 8]} />
+                     <meshStandardMaterial color="#0a0a0a" />
+                 </mesh>
+                 {/* Right Leg */}
+                 <mesh position={[0.3, -0.8, 0]}>
+                     <cylinderGeometry args={[0.18, 0.12, 1.6, 8]} />
+                     <meshStandardMaterial color="#0a0a0a" />
+                 </mesh>
+            </group>
+            
+            <ContactShadows opacity={0.5} scale={10} blur={2} far={4} color="#000" />
+        </group>
+    )
 }
 
 function ToriiGate({ position, scale = 1 }: { position: [number, number, number], scale?: number }) {
@@ -236,22 +392,17 @@ function SceneContent() {
     // Scroll Progress: 0 to 1
     const r1 = scroll.range(0, 0.33); // First section
     const r2 = scroll.range(0.33, 0.33); // Second section
-    const r3 = scroll.range(0.66, 0.34); // Third section
     
     // --- Section 1: Samurai Hero ---
     if (samuraiGroup.current) {
         // Fade out and move up as we scroll down
-        samuraiGroup.current.position.y = r1 * 5; 
-        samuraiGroup.current.position.z = -r1 * 5;
+        samuraiGroup.current.position.y = -1.5 + r1 * 5; 
+        samuraiGroup.current.position.z = -2 - r1 * 5;
         samuraiGroup.current.rotation.y = r1 * 0.5;
-        // Opacity hack: we can't easily fade a group, but we can move it away
     }
 
     // --- Section 2: Torii Gate ---
     if (toriiGroup.current) {
-        // Appears from bottom/distance
-        // r2 goes 0 -> 1 as we scroll through section 2
-        // We want it to pass BY the camera
         const zPos = 10 - (scroll.offset * 25); // Move towards camera
         toriiGroup.current.position.z = zPos;
     }
@@ -274,20 +425,10 @@ function SceneContent() {
 
       <SakuraParticles />
 
-      {/* Hero Group */}
-      <group ref={samuraiGroup}>
-          <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
-            <Image 
-                url={samuraiImg} 
-                scale={[6, 8]} 
-                position={[0, 0, -2]} 
-                transparent
-                opacity={1}
-                grayscale={0.2} 
-                toneMapped={false}
-            />
-            {/* Floating Katana Prop */}
-            <Katana position={[2.5, -1, 0]} rotation={[0, 0, -Math.PI/4]} />
+      {/* Hero Group with GEOMETRIC SAMURAI */}
+      <group ref={samuraiGroup} position={[0, -1.5, -2]}>
+          <Float speed={2} rotationIntensity={0.1} floatIntensity={0.2}>
+              <GeometricSamurai />
           </Float>
       </group>
 
@@ -318,6 +459,8 @@ function SceneLights() {
             <ambientLight intensity={0.2} />
             <spotLight position={[5, 10, 5]} angle={0.5} penumbra={1} intensity={2} color="#d4af37" castShadow />
             <pointLight position={[-5, 0, -5]} intensity={1} color="#8b0000" />
+            {/* Rim light for the Samurai */}
+            <spotLight position={[-5, 5, -2]} intensity={5} color="#8b0000" distance={10} />
             <fog attach="fog" args={['#050505', 5, 20]} />
         </>
     )
@@ -329,12 +472,8 @@ export default function ThreeScene() {
       <Canvas camera={{ position: [0, 0, 5], fov: 50 }} gl={{ antialias: true, alpha: true }}>
         <color attach="background" args={['#050505']} />
         
-        {/* ScrollControls manages the scroll container */}
         <ScrollControls pages={4} damping={0.2}>
-            {/* 3D Content that reacts to scroll */}
             <SceneContent />
-            
-            {/* HTML Content Overlay */}
             <Scroll html style={{ width: '100%', height: '100%' }}>
                 <Interface />
             </Scroll>
