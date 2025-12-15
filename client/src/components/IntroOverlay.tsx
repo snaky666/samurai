@@ -1,10 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Howl } from 'howler';
 import rainGif from '@assets/Raining_Feudal_Japan_GIF_by_Xbox_1765755510192.gif';
+import katanaSound from '@assets/katana-370403_(1)_1765760828510.mp3';
 
 export default function IntroOverlay({ onComplete }: { onComplete: () => void }) {
   const [sequence, setSequence] = useState<'gif' | 'title' | 'complete'>('gif');
   const [step, setStep] = useState(0);
+  const katanaSoundRef = useRef<Howl | null>(null);
+
+  useEffect(() => {
+    katanaSoundRef.current = new Howl({
+      src: [katanaSound],
+      volume: 0.7,
+    });
+    return () => {
+      katanaSoundRef.current?.unload();
+    };
+  }, []);
+
+  const handleGifClick = () => {
+    katanaSoundRef.current?.play();
+  };
 
   useEffect(() => {
     // --- Phase 1: GIF Intro ---
@@ -56,8 +73,9 @@ export default function IntroOverlay({ onComplete }: { onComplete: () => void })
         >
              <img 
                 src={rainGif} 
-                className="absolute inset-0 w-full h-full object-cover opacity-80" 
+                className="absolute inset-0 w-full h-full object-cover opacity-80 cursor-pointer" 
                 alt="Atmospheric Rain"
+                onClick={handleGifClick}
              />
              <div className="absolute inset-0 bg-black/40" /> {/* Darken for mood */}
              
