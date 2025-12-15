@@ -77,14 +77,14 @@ export default function IntroOverlay({ onComplete }: { onComplete: () => void })
                 alt="Atmospheric Rain"
                 onClick={handleGifClick}
              />
-             <div className="absolute inset-0 bg-black/40" /> {/* Darken for mood */}
+             <div className="absolute inset-0 bg-black/40 pointer-events-none" /> {/* Darken for mood */}
              
              {/* Subtle Text Overlay on GIF */}
              <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1, duration: 2 }}
-                className="z-10 text-white/50 font-serif-jp tracking-[0.5em] text-xs absolute bottom-10"
+                className="z-10 text-white/50 font-serif-jp tracking-[0.5em] text-xs absolute bottom-10 pointer-events-none"
             >
                 EST. 1603
              </motion.div>
