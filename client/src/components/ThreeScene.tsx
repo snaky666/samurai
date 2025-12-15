@@ -1,13 +1,15 @@
-import React, { useRef, useMemo, useState } from 'react';
+import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Image, ScrollControls, Scroll, useScroll, Float, Environment, Text, Line, Trail, Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
+import { Howl } from 'howler';
 import samuraiImg from '@assets/generated_images/samurai_warrior_portrait.png';
 import bgTexture from '@assets/generated_images/dark_textured_background.png';
 import Interface from '@/components/Interface';
 import IntroOverlay from '@/components/IntroOverlay';
 import CustomCursor from '@/components/CustomCursor';
-import smokeTexture from '@assets/generated_images/volumetric_smoke_texture.png'; // Assuming this exists now
+import smokeTexture from '@assets/generated_images/volumetric_smoke_texture.png';
+import bgMusic from '@assets/HONOR_OF_THE_SAMURAI_Best_Epic_Heroic_Orchestral_Music_-_Power_1765764744555.mp3';
 
 // --- 3D Components ---
 
@@ -287,6 +289,36 @@ function SceneLights() {
 
 export default function ThreeScene() {
   const [introFinished, setIntroFinished] = useState(false);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(true);
+  const musicRef = useRef<Howl | null>(null);
+
+  useEffect(() => {
+    musicRef.current = new Howl({
+      src: [bgMusic],
+      loop: true,
+      volume: 0.3,
+      autoplay: false,
+    });
+
+    return () => {
+      musicRef.current?.unload();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (introFinished && isMusicPlaying) {
+      musicRef.current?.play();
+    }
+  }, [introFinished]);
+
+  const toggleMusic = () => {
+    if (isMusicPlaying) {
+      musicRef.current?.pause();
+    } else {
+      musicRef.current?.play();
+    }
+    setIsMusicPlaying(!isMusicPlaying);
+  };
 
   return (
     <div className="absolute inset-0 h-screen w-full bg-black">
@@ -301,10 +333,39 @@ export default function ThreeScene() {
       {/* Custom Cursor */}
       <CustomCursor />
 
+      {/* Music Toggle Button */}
+      {introFinished && (
+        <button
+          onClick={toggleMusic}
+          className="fixed bottom-6 right-6 z-[9999] flex items-center gap-2 px-4 py-2 bg-black/70 border border-red-800 rounded-lg text-white hover:bg-red-900/50 transition-all duration-300"
+          style={{ fontFamily: "'Noto Serif JP', serif" }}
+        >
+          {isMusicPlaying ? (
+            <>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+              </svg>
+              <span>ON</span>
+            </>
+          ) : (
+            <>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <line x1="23" y1="9" x2="17" y2="15"></line>
+                <line x1="17" y1="9" x2="23" y2="15"></line>
+              </svg>
+              <span>OFF</span>
+            </>
+          )}
+        </button>
+      )}
+
       <Canvas camera={{ position: [0, 0, 6], fov: 45 }} gl={{ antialias: true, alpha: true, toneMapping: THREE.ReinhardToneMapping, toneMappingExposure: 1.2 }}>
         <color attach="background" args={['#000000']} />
         
-        <ScrollControls pages={4} damping={0.15}> {/* Tighter damping for "heavy" cinematic feel */}
+        <ScrollControls pages={4} damping={0.15}>
             <SceneContent />
             <Scroll html style={{ width: '100%', height: '100%' }}>
                 {introFinished && <Interface />}
